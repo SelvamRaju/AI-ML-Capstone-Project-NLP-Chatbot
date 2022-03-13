@@ -1,0 +1,11 @@
+
+<h1 class="chat-header">NLP Chatbot</h1>
+
+ <div *ngFor="let message of messages">
+     <app-chat-line-item [passMessage] = "message"></app-chat-line-item>
+ </div>
+
+ <div class="footer">
+     <input type="text" class="input-text" #messageText name="message-txt" id="message-txt" placeholder="Enter your message here..">
+     <input type="button" class="footer-button" value="Send" (click)="sendMessage(messageText.value)">
+ </div>
