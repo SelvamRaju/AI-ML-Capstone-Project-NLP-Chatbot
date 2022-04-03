@@ -8,6 +8,7 @@ import { ApiService } from '../../service/api.service';
 })
 export class ChatwindowComponent implements OnInit {
   messages: any[] = [];
+  apiUrlFromfirebase: any;
 
   constructor(private apiService: ApiService) {}
 
@@ -16,11 +17,19 @@ export class ChatwindowComponent implements OnInit {
       console.log(data);
       this.messages = data.data;
   }) */
+  let fbData = this.apiService.getFireBaseData();
+    fbData.snapshotChanges().subscribe((data) => {
+      data.forEach((item) => {
+        if(item.key === "api-url") {
+          this.apiUrlFromfirebase = item.payload.toJSON();
+        }
+      });
+    });
   }
 
   async sendMessage(messageFromUser: string) {
     await this.messages.push(this.processMesssageFromSelf(messageFromUser));
-    await this.messages.push(this.processMesssageFromModel(messageFromUser));
+    await this.messages.push(this.processMesssageFromModel(this.apiUrlFromfirebase, messageFromUser));
   }
 
   processMesssageFromSelf(messageFromUser: string) {
@@ -33,8 +42,8 @@ export class ChatwindowComponent implements OnInit {
     };
   }
 
-  processMesssageFromModel(messageFromUser: string) {
-    let apiServiceMessage = this.apiService.postMessage(messageFromUser)
+  processMesssageFromModel(url:string, messageFromUser: string) {
+    let apiServiceMessage = this.apiService.postMessage(url, messageFromUser)
     //console.log("TESTING ", apiServiceMessage);
     return {
       message: `NLP Model responded with ${messageFromUser} - Temporary response`,
